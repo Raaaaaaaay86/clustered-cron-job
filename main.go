@@ -1,6 +1,16 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"fmt"
+	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"github.com/raaaaaaaay86/clustered-cron-job/cronjob"
+	"github.com/raaaaaaaay86/clustered-cron-job/cronjob/job"
+	"github.com/raaaaaaaay86/clustered-cron-job/redis"
+	"github.com/raaaaaaaay86/clustered-cron-job/redislock"
+)
 
 func main() {
 	if err := godotenv.Load(); err != nil {
