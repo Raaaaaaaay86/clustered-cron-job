@@ -2,11 +2,13 @@ version: '3'
 
 services:
   cron-redis:
+    container_name: cron-redis
     image: redis
     ports:
       - '6379:6379'
 
   application-1:
+    container_name: application-1
     build: 
       context: .
     ports:
@@ -15,6 +17,7 @@ services:
       REDIS_ADDRESS: cron-redis:6379
 
   application-2:
+    container_name: application-2
     build: 
       context: .
     ports:
