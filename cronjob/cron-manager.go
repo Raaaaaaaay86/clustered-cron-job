@@ -98,3 +98,19 @@ func (c CronManager) extendLock(lock *redsync.Mutex, stopChan chan<- int) {
 		c.logger.Printf("[CronManager] Extend lock succeed (%s)", lock.Name())
 	}
 }
+
+func (c CronManager) AddJobs(jobSpecs []JobSpec) []cron.EntryID {
+	entryIds := make([]cron.EntryID, 0)
+
+	for _, jobSpec := range jobSpecs {
+		entryId, err := c.Cron.AddJob(jobSpec.TimeSpec, jobSpec.Job)
+		if err != nil {
+			panic(err)
+		}
+
+		entryIds = append(entryIds, entryId)
+	}
+
+	return entryIds
+}
+
