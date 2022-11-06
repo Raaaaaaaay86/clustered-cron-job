@@ -22,6 +22,8 @@ func main() {
 	greetingJob := job.NewGreetingJob()
 	cronManager := cronjob.NewCronManager(redisLockManager, greetingJob)
 
+	go cronManager.Start()
+
 	r := gin.Default()
 
 	r.GET("/check", func(c *gin.Context) {
@@ -29,8 +31,6 @@ func main() {
 			"message": "success",
 		})
 	})
-
-	go cronManager.Start()
 
 	addr := fmt.Sprintf(":%s", os.Getenv("SERVER_PORT"))
 	r.Run(addr)
