@@ -51,13 +51,13 @@ func (c CronManager) Start() {
 }
 
 func (c CronManager) obtainLock(name string) *redsync.Mutex {
-	rs := c.RedisLockManager.Client()
+	// rs := c.RedisLockManager.Client()
 
 	for {
 		// Retry every N seconds until obtain the lock.
 		time.Sleep(10 * time.Second)
 
-		lock := rs.NewMutex(name, redsync.WithExpiry(30*time.Second))
+		lock := c.RedisLockManager.NewLock(name, 30*time.Second)
 
 		if err := lock.Lock(); err != nil {
 			c.logger.Printf("[CronManager] Obtained the lock failed: %s", err)
