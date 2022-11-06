@@ -44,7 +44,7 @@ func (c CronManager) Start() {
 		c.Cron.AddJob("@every 1s", c.GreetingJob)
 		c.Cron.Start()
 
-		<-stopChan
+		<-stopChan // Block here to wait stop signal
 
 		c.Cron.Stop()
 	}
