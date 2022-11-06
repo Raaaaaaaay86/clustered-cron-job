@@ -114,3 +114,8 @@ func (c CronManager) AddJobs(jobSpecs []JobSpec) []cron.EntryID {
 	return entryIds
 }
 
+func (c CronManager) RemoveJobs(entryIds []cron.EntryID) {
+	for _, entryId := range entryIds {
+		c.Cron.Remove(entryId)
+	}
+}
