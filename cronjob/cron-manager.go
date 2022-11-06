@@ -46,11 +46,19 @@ func (c CronManager) Start() {
 
 		go c.extendLock(lock, stopChan) // Open new goroutine to extend lock ownership repeatedly.
 
-		c.Cron.AddJob("@every 1s", c.GreetingJob)
+		job := []JobSpec{
+			{
+				TimeSpec: "@every 1s",
+				Job:      c.GreetingJob,
+			},
+		}
+
+		entryIds := c.AddJobs(job)
 		c.Cron.Start()
 
 		<-stopChan // Block here to wait stop signal
 
+		c.RemoveJobs(entryIds)
 		c.Cron.Stop()
 	}
 }
