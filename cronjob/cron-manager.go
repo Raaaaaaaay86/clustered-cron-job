@@ -21,6 +21,11 @@ type CronManager struct {
 	logger           log.Logger
 }
 
+type JobSpec struct {
+	TimeSpec string
+	Job      cron.Job
+}
+
 func NewCronManager(
 	redisLockManager redislock.IRedisLockManager,
 	greetingJob job.IGreetingJob,
