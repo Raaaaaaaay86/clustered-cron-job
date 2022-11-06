@@ -3,6 +3,10 @@ package main
 import "github.com/gin-gonic/gin"
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		panic(err)
+	}
+
 	r := gin.Default()
 
 	r.GET("/check", func(c *gin.Context) {
