@@ -34,12 +34,20 @@ func NewCronManager(
 }
 
 func (c CronManager) Start() {
-	lock := c.obtainLock("your_app_name") // Thr process will be blocked at this line until obtain the lock.
+	for {
+		lock := c.obtainLock("your_app_name") // Thr process will be blocked at this line until obtain the lock.
 
-	go c.extendLock(lock) // Open new goroutine to extend lock ownership repeatedly.
+		stopChan := make(chan int)
 
-	c.Cron.AddJob("@every 1s", c.GreetingJob)
-	c.Cron.Start()
+		go c.extendLock(lock, stopChan) // Open new goroutine to extend lock ownership repeatedly.
+
+		c.Cron.AddJob("@every 1s", c.GreetingJob)
+		c.Cron.Start()
+
+		<-stopChan
+
+		c.Cron.Stop()
+	}
 }
 
 func (c CronManager) obtainLock(name string) *redsync.Mutex {
@@ -62,7 +70,7 @@ func (c CronManager) obtainLock(name string) *redsync.Mutex {
 	}
 }
 
-func (c CronManager) extendLock(lock *redsync.Mutex) {
+func (c CronManager) extendLock(lock *redsync.Mutex, stopChan chan<- int) {
 	for {
 		// Refresh lock TTL every N seconds.
 		time.Sleep(10 * time.Second)
@@ -71,12 +79,14 @@ func (c CronManager) extendLock(lock *redsync.Mutex) {
 		if err != nil {
 			c.logger.Printf("[CronManager] Got error when extending lock (%s): %s", lock.Name(), err.Error())
 
+			stopChan <- 1
 			break
 		}
 
 		if !ok {
 			c.logger.Printf("[CronManager] Extend lock failed (%s)", lock.Name())
 
+			stopChan <- 1
 			break
 		}
 
