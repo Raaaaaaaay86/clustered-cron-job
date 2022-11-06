@@ -22,4 +22,6 @@ func main() {
 
 	go cronManager.Start()
 
+	addr := fmt.Sprintf(":%s", os.Getenv("SERVER_PORT"))
+	r.Run(addr)
 }
