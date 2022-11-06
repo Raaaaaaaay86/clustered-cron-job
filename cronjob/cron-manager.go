@@ -53,12 +53,12 @@ func (c CronManager) Start() {
 			},
 		}
 
-		entryIds := c.AddJobs(job)
+		entryIds := c.addJobs(job)
 		c.Cron.Start()
 
 		<-stopChan // Block here to wait stop signal
 
-		c.RemoveJobs(entryIds)
+		c.removeJobs(entryIds)
 		c.Cron.Stop()
 	}
 }
@@ -107,7 +107,7 @@ func (c CronManager) extendLock(lock *redsync.Mutex, stopChan chan<- int) {
 	}
 }
 
-func (c CronManager) AddJobs(jobSpecs []JobSpec) []cron.EntryID {
+func (c CronManager) addJobs(jobSpecs []JobSpec) []cron.EntryID {
 	entryIds := make([]cron.EntryID, 0)
 
 	for _, jobSpec := range jobSpecs {
@@ -122,7 +122,7 @@ func (c CronManager) AddJobs(jobSpecs []JobSpec) []cron.EntryID {
 	return entryIds
 }
 
-func (c CronManager) RemoveJobs(entryIds []cron.EntryID) {
+func (c CronManager) removeJobs(entryIds []cron.EntryID) {
 	for _, entryId := range entryIds {
 		c.Cron.Remove(entryId)
 	}
