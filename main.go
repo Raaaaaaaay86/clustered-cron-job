@@ -7,6 +7,11 @@ func main() {
 		panic(err)
 	}
 
+	redisManager := redis.NewRedisManager()
+	redisLockManager := redislock.NewRedisLockManager(redisManager)
+	greetingJob := job.NewGreetingJob()
+	cronManager := cronjob.NewCronManager(redisLockManager, greetingJob)
+
 	r := gin.Default()
 
 	r.GET("/check", func(c *gin.Context) {
@@ -15,5 +20,6 @@ func main() {
 		})
 	})
 
-	r.Run() // listen and serve on 0.0.0.0:8080
+	go cronManager.Start()
+
 }
